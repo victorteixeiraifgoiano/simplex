@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class SimplexTabela {
     private int numRows;
     private int numColumns;
@@ -27,17 +29,42 @@ public class SimplexTabela {
     }
 
     public static void main(String[] args) {
-        int numRows = 3; 
-        int numColumns = 5; 
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Número de variáveis de decisão: ");
+        int numVariables = scanner.nextInt();
+
+        System.out.print("Número de restrições: ");
+        int numConstraints = scanner.nextInt();
+
+        int numRows = numConstraints + 1; 
+        int numColumns = numVariables + numConstraints + 1; 
 
         SimplexTabela tableau = new SimplexTabela(numRows, numColumns);
 
-        tableau.setEntry(0, 0, 1); 
-        tableau.setEntry(0, 1, 2); 
-        tableau.setEntry(0, 2, 0); 
-        tableau.setEntry(0, 3, 0); 
-        tableau.setEntry(0, 4, 0); 
+        System.out.println("Insira os coeficientes da função objetivo:");
+        for (int j = 0; j < numVariables; j++) {
+            System.out.print("Coeficiente da variável x" + (j + 1) + ": ");
+            double coefficient = scanner.nextDouble();
+            tableau.setEntry(0, j, coefficient);
+        }
 
+        System.out.println("Insira os coeficientes das restrições:");
+        for (int i = 1; i < numRows; i++) {
+            for (int j = 0; j < numVariables; j++) {
+                System.out.print("Coeficiente da variável x" + (j + 1) + " na restrição " + i + ": ");
+                double coefficient = scanner.nextDouble();
+                tableau.setEntry(i, j, coefficient);
+            }
+
+            System.out.print("Lado direito da restrição " + i + ": ");
+            double rhs = scanner.nextDouble();
+            tableau.setEntry(i, numVariables + i - 1, rhs);
+        }
+
+        System.out.println("\nTabela Simplex:");
         tableau.printTableau();
+
+        scanner.close();
     }
 }
