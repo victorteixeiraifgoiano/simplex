@@ -1,9 +1,9 @@
-public class SimplexTableau {
+public class SimplexTabela {
     private int numRows;
     private int numColumns;
     private double[][] tableau;
 
-    public SimplexTableau(int numRows, int numColumns) {
+    public SimplexTabela(int numRows, int numColumns) {
         this.numRows = numRows;
         this.numColumns = numColumns;
         tableau = new double[numRows][numColumns];
@@ -30,7 +30,7 @@ public class SimplexTableau {
         int numRows = 3; 
         int numColumns = 5; 
 
-        SimplexTableau tableau = new SimplexTableau(numRows, numColumns);
+        SimplexTabela tableau = new SimplexTabela(numRows, numColumns);
 
         tableau.setEntry(0, 0, 1); 
         tableau.setEntry(0, 1, 2); 
