@@ -28,6 +28,49 @@ public class SimplexTabela {
         }
     }
 
+    public void findBasicAndNonBasicVariables() {
+        int[] basicVariables = new int[numRows - 1];
+        int[] nonBasicVariables = new int[numColumns - numRows + 1];
+
+        for (int i = 1; i < numRows; i++) {
+            int pivotColumn = -1;
+            for (int j = 0; j < numColumns - 1; j++) {
+                if (tableau[i][j] == 1) {
+                    pivotColumn = j;
+                    break;
+                }
+            }
+            if (pivotColumn != -1) {
+                basicVariables[i - 1] = pivotColumn;
+            }
+        }
+
+        int nbIndex = 0;
+        for (int j = 0; j < numColumns - 1; j++) {
+            boolean isNonBasic = true;
+            for (int i = 1; i < numRows; i++) {
+                if (basicVariables[i - 1] == j) {
+                    isNonBasic = false;
+                    break;
+                }
+            }
+            if (isNonBasic) {
+                nonBasicVariables[nbIndex] = j;
+                nbIndex++;
+            }
+        }
+
+        System.out.println("\nVariáveis Básicas:");
+        for (int i = 0; i < basicVariables.length; i++) {
+            System.out.println("x" + (basicVariables[i] + 1));
+        }
+
+        System.out.println("\nVariáveis Não Básicas:");
+        for (int i = 0; i < nonBasicVariables.length; i++) {
+            System.out.println("x" + (nonBasicVariables[i] + 1));
+        }
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -37,8 +80,8 @@ public class SimplexTabela {
         System.out.print("Número de restrições: ");
         int numConstraints = scanner.nextInt();
 
-        int numRows = numConstraints + 1; 
-        int numColumns = numVariables + numConstraints + 1; 
+        int numRows = numConstraints + 1; // Número de linhas na tabela (incluindo a linha da função objetivo)
+        int numColumns = numVariables + numConstraints + 1; // Número de colunas na tabela
 
         SimplexTabela tableau = new SimplexTabela(numRows, numColumns);
 
@@ -59,11 +102,15 @@ public class SimplexTabela {
 
             System.out.print("Lado direito da restrição " + i + ": ");
             double rhs = scanner.nextDouble();
-            tableau.setEntry(i, numVariables + i - 1, rhs);
+            tableau.setEntry(i, numVariables + i - 1, rhs); // Variáveis de folga
         }
 
+        // Imprima a tabela
         System.out.println("\nTabela Simplex:");
         tableau.printTableau();
+
+        // Encontre as variáveis básicas e não básicas
+        tableau.findBasicAndNonBasicVariables();
 
         scanner.close();
     }
