@@ -1,3 +1,7 @@
+//Alunos:
+//          Ana Carolina Silva Borges
+//          Victor Emannuel de Souza Teixeira
+
 import java.util.Scanner;
 
 public class Simplex {
