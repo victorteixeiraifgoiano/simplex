@@ -1,190 +1,164 @@
-// //Alunos:
-// //          Ana Carolina Silva Borges
-// //          Victor Emannuel de Souza Teixeira
+//Alunos:
+//          Ana Carolina Silva Borges
+//          Victor Emannuel de Souza Teixeira
 
-// import java.util.Scanner;
+import java.util.Scanner;
 
-// public class Simplex {
+public class Simplex {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
 
-//     public static void main(String[] args) {
-//         Scanner scanner = new Scanner(System.in);
+        // Número de variáveis de decisão e restrições
+        System.out.print("Número de variáveis de decisão: ");
+        int numVariaveis = scanner.nextInt();
+        System.out.print("Número de restrições: ");
+        int numRestricoes = scanner.nextInt();
 
-//         // Entrada de Dados
-//         double[][] tableau = getInputTableau(scanner);
+        // Inicialização da matriz (tabela simplex)
+        double[][] tabela = new double[numRestricoes + 1][numVariaveis + numRestricoes + 1];
 
-//         // Executar o Algoritmo Simplex
-//         boolean optimal = false;
-//         while (!optimal) {
-//             // Determinar Variáveis Básicas e Não Básicas
-//             int enteringVariable = selectEnteringVariable(tableau);
-//             int leavingVariable = selectLeavingVariable(tableau, enteringVariable);
+        // Leitura dos coeficientes das restrições
+        for (int i = 0; i < numRestricoes; i++) {
+            System.out.println("Coeficientes da restrição " + (i + 1));
+            for (int j = 0; j < numVariaveis; j++) {
+                System.out.print("Coeficiente " + (j + 1) + ": ");
+                tabela[i][j] = scanner.nextDouble();
+            }
+            // Lado direito
+            System.out.print("Lado direito: ");
+            tabela[i][numVariaveis + numRestricoes] = scanner.nextDouble();
+        }
 
-//             // Cálculos de Pivot
-//             performPivot(tableau, enteringVariable, leavingVariable);
+        // Leitura dos coeficientes da função objetivo
+        System.out.println("Coeficientes da função objetivo:");
+        for (int j = 0; j < numVariaveis; j++) {
+            System.out.print("Coeficiente " + (j + 1) + ": ");
+            tabela[numRestricoes][j] = scanner.nextDouble();
+        }
 
-//             // Verificação de Solução Ótima
-//             optimal = isOptimal(tableau);
-//         }
+        // Inicialização das variáveis básicas
+        for (int i = 0; i < numRestricoes; i++) {
+            tabela[i][numVariaveis + i] = 1.0;
+        }
 
-//         // Exibir Resultados
-//         printResult(tableau);
+        // Implemente o algoritmo simplex aqui
+        while (existeColunaPivo(tabela)) {
+            // Encontre a coluna do pivô e a linha do pivô
+            int colunaPivo = encontrarColunaPivo(tabela);
+            int linhaPivo = encontrarLinhaPivo(tabela, colunaPivo);
 
-//         scanner.close();
-//     }
+            // Faça a pivotação na tabela
+            pivoteamento(tabela, linhaPivo, colunaPivo);
 
+            // Exiba a tabela de iterações
+            mostrarTabela(tabela);
+        }
 
-//     private static double[][] getInputTableau(Scanner scanner) {
-//         System.out.println("Informe o número de variáveis na função objetivo:");
-//         int numVariables = scanner.nextInt();
-    
-//         System.out.println("Informe o número de restrições:");
-//         int numConstraints = scanner.nextInt();
-    
-//         // Tamanho da matriz tableau é (numConstraints + 1) x (numVariables + numConstraints + 2)
-//         double[][] tableau = new double[numConstraints + 1][numVariables + numConstraints + 2];
-    
-//         System.out.println("Informe os coeficientes da função objetivo:");
-//         for (int j = 0; j < numVariables; j++) {
-//             System.out.print("Coeficiente da variável x" + (j + 1) + ": ");
-//             tableau[0][j] = scanner.nextDouble();
-//         }
-    
-//         for (int i = 1; i <= numConstraints; i++) {
-//             System.out.println("Informe os coeficientes da restrição " + i + ":");
-//             for (int j = 0; j < numVariables; j++) {
-//                 System.out.print("Coeficiente da variável x" + (j + 1) + ": ");
-//                 tableau[i][j] = scanner.nextDouble();
-//             }
-//             System.out.print("Valor do lado direito da restrição: ");
-//             tableau[i][numVariables + i - 1] = scanner.nextDouble();
-//         }
-    
-//         // Definir os coeficientes da última coluna (coeficientes das variáveis de folga)
-//         for (int i = 1; i <= numConstraints; i++) {
-//             tableau[i][numVariables + numConstraints] = 1.0;
-//         }
-    
-//         // Definir os coeficientes da última coluna (coeficientes da variável artificial)
-//         for (int i = 1; i <= numConstraints; i++) {
-//             tableau[i][numVariables + numConstraints + 1] = 0.0;
-//         }
-    
-//         return tableau;
-//     }
-    
+        // Exiba o resultado final
+        System.out.println("Resultado Final:");
 
-//     private static int selectEnteringVariable(double[][] tableau) {
-//         int numVariables = tableau[0].length - 1; // O último elemento da linha é a função objetivo
-    
-//         int enteringVariable = -1;
-//         double maxCoefficient = 0.0;
-    
-//         for (int j = 0; j < numVariables; j++) {
-//             double coefficient = tableau[0][j]; // Coeficiente na linha da função objetivo
-    
-//             // Se o coeficiente for negativo e maior em magnitude do que o máximo atual
-//             if (coefficient < 0 && Math.abs(coefficient) > Math.abs(maxCoefficient)) {
-//                 maxCoefficient = coefficient;
-//                 enteringVariable = j;
-//             }
-//         }
-    
-//         return enteringVariable;
-//     }
-    
+        for (int i = 0; i < tabela.length - 1; i++) {
+            System.out.println("Variável " + (i + 1) + ": " + tabela[i][tabela[i].length - 1]);
+        }
 
+        System.out.println(
+                "Valor da Função Objetivo: " + (-tabela[tabela.length - 1][tabela[tabela.length - 1].length - 1]));
 
-//     private static int selectLeavingVariable(double[][] tableau, int enteringVariable) {
-//         int numRows = tableau.length;
-//         int numCols = tableau[0].length;
-    
-//         int leavingVariable = -1;
-//         double minRatio = Double.MAX_VALUE;
-    
-//         for (int i = 1; i < numRows; i++) {
-//             if (tableau[i][enteringVariable] > 0) {
-//                 double ratio = tableau[i][numCols - 1] / tableau[i][enteringVariable];
-//                 if (ratio < minRatio) {
-//                     minRatio = ratio;
-//                     leavingVariable = i;
-//                 }
-//             }
-//         }
-    
-//         return leavingVariable;
-//     }
-    
-    
-    
-    
+        scanner.close();
+    }
 
-//     private static void performPivot(double[][] tableau, int enteringVariable, int leavingVariable) {
-//         int numRows = tableau.length;
-//         int numCols = tableau[0].length;
-    
-//         double pivotElement = tableau[leavingVariable][enteringVariable];
-        
-//         // Fazer o elemento pivot igual a 1
-//         for (int j = 0; j < numCols; j++) {
-//             tableau[leavingVariable][j] /= pivotElement;
-//         }
-    
-//         // Atualizar outras linhas
-//         for (int i = 0; i < numRows; i++) {
-//             if (i != leavingVariable) {
-//                 double factor = tableau[i][enteringVariable];
-//                 for (int j = 0; j < numCols; j++) {
-//                     tableau[i][j] -= factor * tableau[leavingVariable][j];
-//                 }
-//             }
-//         }
-//     }
-    
+    // Verifique se há uma coluna pivo positiva
+    private static boolean existeColunaPivo(double[][] tabela) {
+        int numLinhas = tabela.length;
+        int numColunas = tabela[0].length;
 
-//     private static boolean isOptimal(double[][] tableau) {
-//         int lastRow = tableau.length - 1;
-//         int numColumns = tableau[0].length;
-    
-//         // Iterar pela última linha (função objetivo) para verificar se todos os coeficientes são não negativos
-//         for (int j = 0; j < numColumns; j++) {
-//             if (tableau[lastRow][j] < 0) {
-//                 return false; // Se qualquer coeficiente for negativo, a solução não é ótima
-//             }
-//         }
-    
-//         return true; // Todos os coeficientes são não negativos, a solução é ótima
-//     }
-    
+        for (int coluna = 0; coluna < numColunas; coluna++) {
+            if (tabela[numLinhas - 1][coluna] > 0) {
+                return true; // Encontrou uma coluna pivo positiva
+            }
+        }
+        return false; // Nenhuma coluna pivo positiva encontrada
+    }
 
-//     private static void printResult(double[][] tableau) {
-//         int numRows = tableau.length;
-//         int numCols = tableau[0].length;
-    
-//         System.out.println("Tabela Simplex:");
-    
-//         // Exibir cabeçalho das colunas
-//         for (int j = 1; j < numCols - 1; j++) {
-//             System.out.printf("%10s", "x" + j);
-//         }
-//         System.out.printf("%10s", "B");
-//         System.out.println();
-    
-//         // Exibir variáveis básicas, não básicas e os valores das variáveis
-//         for (int i = 1; i < numRows; i++) {
-//             for (int j = 1; j < numCols - 1; j++) {
-//                 System.out.printf("%10.2f", tableau[i][j]);
-//             }
-//             System.out.printf("%10.2f", tableau[i][numCols - 1]);
-//             System.out.println();
-//         }
-    
-//         // Exibir o valor da função objetivo na última linha
-//         System.out.print("Z:");
-//         for (int j = 1; j < numCols - 1; j++) {
-//             System.out.printf("%10.2f", tableau[0][j]);
-//         }
-//         System.out.printf("%10.2f", tableau[0][numCols - 1]);
-//         System.out.println();
-//     }
-    
-// }
+    // Encontre a coluna pivo (maior coeficiente na linha de função objetivo)
+    private static int encontrarColunaPivo(double[][] tabela) {
+        int numVariaveis = tabela[0].length - 1;
+        int colunaPivo = -1;
+        double maiorCoeficiente = 0.0;
+
+        for (int j = 0; j < numVariaveis; j++) {
+            if (tabela[tabela.length - 1][j] > maiorCoeficiente) {
+                maiorCoeficiente = tabela[tabela.length - 1][j];
+                colunaPivo = j;
+            }
+        }
+
+        return colunaPivo;
+    }
+
+    // Encontre a linha pivo (menor razão entre o lado direito e o coeficiente da
+    // coluna pivo)
+    private static int encontrarLinhaPivo(double[][] tabela, int colunaPivo) {
+        int numRestricoes = tabela.length - 1;
+        int linhaPivo = -1;
+        double menorRazao = Double.MAX_VALUE;
+
+        for (int i = 0; i < numRestricoes; i++) {
+            if (tabela[i][colunaPivo] > 0) { // Verifique se o coeficiente é positivo
+                double razao = tabela[i][tabela[0].length - 1] / tabela[i][colunaPivo];
+                if (razao < menorRazao) {
+                    menorRazao = razao;
+                    linhaPivo = i;
+                }
+            }
+        }
+
+        return linhaPivo;
+    }
+
+    // Execute a pivotação na tabela
+    private static void pivoteamento(double[][] tabela, int linhaPivo, int colunaPivo) {
+        int numRows = tabela.length;
+        int numCols = tabela[0].length;
+
+        // Dividir a linha do pivô pelo elemento pivô para torná-lo 1
+        double pivotValue = tabela[linhaPivo][colunaPivo];
+        for (int j = 0; j < numCols; j++) {
+            tabela[linhaPivo][j] /= pivotValue;
+        }
+
+        // Garanta que os outros elementos na coluna do pivô sejam zero
+        for (int i = 0; i < numRows; i++) {
+            if (i != linhaPivo) {
+                double ratio = tabela[i][colunaPivo];
+                for (int j = 0; j < numCols; j++) {
+                    tabela[i][j] -= ratio * tabela[linhaPivo][j];
+                }
+            }
+        }
+    }
+
+    // Exiba a tabela de iterações
+    private static void mostrarTabela(double[][] tabela) {
+        int linhas = tabela.length;
+        int colunas = tabela[0].length;
+
+        System.out.println("Tabela de Iterações:");
+
+        // Imprimir cabeçalho da tabela
+        for (int j = 0; j < colunas; j++) {
+            System.out.printf("%-10s", "x" + (j + 1));
+        }
+        System.out.println();
+
+        // Imprimir linhas da tabela
+        for (int i = 0; i < linhas; i++) {
+            for (int j = 0; j < colunas; j++) {
+                System.out.printf("%-10.2f", tabela[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+}
