@@ -41,20 +41,20 @@ public class Simplex {
             tabela[i][numVariaveis + i] = 1.0;
         }
 
-        // Implemente o algoritmo simplex aqui
+        // Algoritmo simplex
         while (existeColunaPivo(tabela)) {
-            // Encontre a coluna do pivô e a linha do pivô
+            // Encontrando a coluna do pivô e a linha do pivô
             int colunaPivo = encontrarColunaPivo(tabela);
             int linhaPivo = encontrarLinhaPivo(tabela, colunaPivo);
 
-            // Faça a pivotação na tabela
+            // Pivotação na tabela
             pivoteamento(tabela, linhaPivo, colunaPivo);
 
-            // Exiba a tabela de iterações
+            // Exibindo a tabela de iterações
             mostrarTabela(tabela);
         }
 
-        // Exiba o resultado final
+        // Exibindo o resultado final
         System.out.println("Resultado Final:");
 
         for (int i = 0; i < tabela.length - 1; i++) {
@@ -67,20 +67,20 @@ public class Simplex {
         scanner.close();
     }
 
-    // Verifique se há uma coluna pivo positiva
+    // Verificando se há uma coluna pivo positiva
     private static boolean existeColunaPivo(double[][] tabela) {
         int numLinhas = tabela.length;
         int numColunas = tabela[0].length;
 
         for (int coluna = 0; coluna < numColunas; coluna++) {
             if (tabela[numLinhas - 1][coluna] > 0) {
-                return true; // Encontrou uma coluna pivo positiva
+                return true; // Encontrando uma coluna pivo positiva
             }
         }
         return false; // Nenhuma coluna pivo positiva encontrada
     }
 
-    // Encontre a coluna pivo (maior coeficiente na linha de função objetivo)
+    // Encontrando a coluna pivo (maior coeficiente na linha de função objetivo)
     private static int encontrarColunaPivo(double[][] tabela) {
         int numVariaveis = tabela[0].length - 1;
         int colunaPivo = -1;
@@ -96,15 +96,14 @@ public class Simplex {
         return colunaPivo;
     }
 
-    // Encontre a linha pivo (menor razão entre o lado direito e o coeficiente da
-    // coluna pivo)
+    // Encontrando a linha pivo (menor razão entre o lado direito e o coeficiente da coluna pivo)
     private static int encontrarLinhaPivo(double[][] tabela, int colunaPivo) {
         int numRestricoes = tabela.length - 1;
         int linhaPivo = -1;
         double menorRazao = Double.MAX_VALUE;
 
         for (int i = 0; i < numRestricoes; i++) {
-            if (tabela[i][colunaPivo] > 0) { // Verifique se o coeficiente é positivo
+            if (tabela[i][colunaPivo] > 0) { // Verificando se o coeficiente é positivo
                 double razao = tabela[i][tabela[0].length - 1] / tabela[i][colunaPivo];
                 if (razao < menorRazao) {
                     menorRazao = razao;
@@ -116,18 +115,18 @@ public class Simplex {
         return linhaPivo;
     }
 
-    // Execute a pivotação na tabela
+    // Executando a pivotação na tabela
     private static void pivoteamento(double[][] tabela, int linhaPivo, int colunaPivo) {
         int numRows = tabela.length;
         int numCols = tabela[0].length;
 
-        // Dividir a linha do pivô pelo elemento pivô para torná-lo 1
+        // Dividindo a linha do pivô pelo elemento pivô para torná-lo 1
         double pivotValue = tabela[linhaPivo][colunaPivo];
         for (int j = 0; j < numCols; j++) {
             tabela[linhaPivo][j] /= pivotValue;
         }
 
-        // Garanta que os outros elementos na coluna do pivô sejam zero
+        // Garantindo que os outros elementos na coluna do pivô sejam zero
         for (int i = 0; i < numRows; i++) {
             if (i != linhaPivo) {
                 double ratio = tabela[i][colunaPivo];
@@ -138,20 +137,20 @@ public class Simplex {
         }
     }
 
-    // Exiba a tabela de iterações
+    // Exibindo a tabela de iterações
     private static void mostrarTabela(double[][] tabela) {
         int linhas = tabela.length;
         int colunas = tabela[0].length;
 
         System.out.println("Tabela de Iterações:");
 
-        // Imprimir cabeçalho da tabela
+        // Imprimindo cabeçalho da tabela
         for (int j = 0; j < colunas; j++) {
             System.out.printf("%-10s", "x" + (j + 1));
         }
         System.out.println();
 
-        // Imprimir linhas da tabela
+        // Imprimindo linhas da tabela
         for (int i = 0; i < linhas; i++) {
             for (int j = 0; j < colunas; j++) {
                 System.out.printf("%-10.2f", tabela[i][j]);
